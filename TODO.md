@@ -1,1 +1,4 @@
-
+- $stringIsFQDN | Standardize options to camelCase (src/index.ts)
+- $stringIsISSN | Standardize options to camelCase (src/index.ts)
+- $stringIsURL  | Standardize options to camelCase (src/index.ts)
+- docs          | Add expression documentation (src/index.ts)

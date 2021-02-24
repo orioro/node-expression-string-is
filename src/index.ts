@@ -160,6 +160,7 @@ const _is = (method, optionsTypeMap?) => {
 }
 
 /**
+ * @todo docs Add expression documentation
  * @function $stringIsAlpha
  * @param {Object} [options={}]
  * @param {String} options.locale
@@ -287,6 +288,7 @@ export const $stringIsEmail = _is(
 )
 
 /**
+ * @todo $stringIsFQDN Standardize options to camelCase
  * @function $stringIsFQDN
  */
 export const $stringIsFQDN = _is(isFQDN, [
@@ -371,6 +373,7 @@ export const $stringIsISO31661Alpha3 = _is(isISO31661Alpha3)
 export const $stringIsISRC = _is(isISRC)
 
 /**
+ * @todo $stringIsISSN Standardize options to camelCase
  * @function $stringIsISSN
  */
 export const $stringIsISSN = _is(isISSN, [
@@ -448,6 +451,7 @@ export const $stringIsStrongPassword = _is(isStrongPassword, [
 ])
 
 /**
+ * @todo $stringIsURL Standardize options to camelCase
  * @function $stringIsURL
  */
 export const $stringIsURL = _is(isURL, [
