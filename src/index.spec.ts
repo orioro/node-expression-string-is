@@ -243,6 +243,7 @@ describe('$stringIsISBN', () => {
   _expTests('$stringIsISBN', [
     ['Test str', false],
     ['9781234567897', true],
+    ['978-3-16-148410-0', true],
   ])
 })
 
