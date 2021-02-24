@@ -1,4 +1,3 @@
-- $stringIsFQDN | Standardize options to camelCase (src/index.ts)
-- $stringIsISSN | Standardize options to camelCase (src/index.ts)
-- $stringIsURL  | Standardize options to camelCase (src/index.ts)
-- docs          | Add expression documentation (src/index.ts)
+- $stringIsCreditCard | Check support for: enRoute, Voyager, HiperCard and
+                          Aura (https://www.4devs.com.br/gerador_de_numero_cartao_credito) (src/index.ts)
+- $stringIsMACAddress | Check for macaddess without any separators (src/index.ts)

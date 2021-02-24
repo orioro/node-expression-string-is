@@ -27,7 +27,6 @@ import isLowercase from 'validator/lib/isLowercase'
 import isMACAddress from 'validator/lib/isMACAddress'
 import isMagnetURI from 'validator/lib/isMagnetURI'
 import isMimeType from 'validator/lib/isMimeType'
-import isMobilePhone from 'validator/lib/isMobilePhone'
 import isNumeric from 'validator/lib/isNumeric'
 import isUppercase from 'validator/lib/isUppercase'
 import isStrongPassword from 'validator/lib/isStrongPassword'
@@ -97,11 +96,7 @@ import isUUID from 'validator/lib/isUUID'
  * ✓ isMagnetURI(str)
  * ✗ isMD5(str): use isHash
  * ✓ isMimeType(str)
- * ✓ isMobilePhone(str [, locale [, options]]): although a hard thing to standardize,
- *                                              as mobile number pattern vary across
- *                                              countries, code looks promising and
- *                                              mobile phone is an identifier used as
- *                                              frequent as e-mail
+ * ✗ isMobilePhone(str [, locale [, options]]): Hard to standardize, prefer specific locale code
  * ✗ isMongoId(str)
  * ✗ isMultibyte(str)
  * ✓ isNumeric(str [, options])
@@ -160,7 +155,6 @@ const _is = (method, optionsTypeMap?) => {
 }
 
 /**
- * @todo docs Add expression documentation
  * @function $stringIsAlpha
  * @param {Object} [options={}]
  * @param {String} options.locale
@@ -197,24 +191,32 @@ export const $stringIsAlphanumeric = _is(
 )
 
 /**
+ * https://en.wikipedia.org/wiki/ASCII
+ *
  * @function $stringIsAscii
  * @param {String} str
  */
 export const $stringIsAscii = _is(isAscii)
 
 /**
+ * https://en.wikipedia.org/wiki/Base32
+ *
  * @function $stringIsBase32
  * @param {String} str
  */
 export const $stringIsBase32 = _is(isBase32)
 
 /**
+ * https://tools.ietf.org/id/draft-msporny-base58-01.html
+ *
  * @function $stringIsBase58
  * @param {String} str
  */
 export const $stringIsBase58 = _is(isBase58)
 
 /**
+ * https://en.wikipedia.org/wiki/Base64
+ *
  * @function $stringIsBase64
  * @param {Object} [options={}]
  * @param {Boolean} [options.urlSafe=false]
@@ -228,32 +230,54 @@ export const $stringIsBase64 = _is(isBase64, [
 ])
 
 /**
+ * Business Identifier Code (BIC)
+ * BIC (Business Identifier Code) is an international standard for routing business transactions and identifying business parties.
+ *
+ * https://www.swift.com/standards/data-standards/bic-business-identifier-code
+ *
  * @function $stringIsBIC
  * @param {String} str
  */
 export const $stringIsBIC = _is(isBIC)
 
 /**
+ * Supported:
+ * - MasterCard `xxxx xxxx xxxx xxxx`
+ * - Visa (16 digits) `xxxx xxxx xxxx xxxx`
+ * - American Express `xxxx xxxxxx xxxxx`
+ * - Diners Club `xxxx xxxxxx xxxxx`
+ * - Discover `xxxx xxxxxx xxxx`
+ * - JCB `xxxx xxxx xxxx xxxx`
+ *
+ * @todo $stringIsCreditCard Check support for: enRoute, Voyager, HiperCard and
+ *                           Aura (https://www.4devs.com.br/gerador_de_numero_cartao_credito)
  * @function $stringIsCreditCard
  * @param {String} str
  */
 export const $stringIsCreditCard = _is(isCreditCard)
 
 /**
+ * `data:[<media type>][;base64],<data>`
+ *
+ * https://en.wikipedia.org/wiki/Data_URI_scheme
+ *
  * @function $stringIsDataURI
  * @param {String} str
  */
 export const $stringIsDataURI = _is(isDataURI)
 
 /**
+ * `foo@bar.com`
+ *
  * @function $stringIsEmail
  * @param {Object} [options={}]
- * @param {Boolean} [options.allow_display_name=false]
- * @param {Boolean} [options.require_display_name=false]
- * @param {Boolean} [options.allow_utf8_local_part=false]
- * @param {Boolean} [options.require_tld=false]
- * @param {Boolean} [options.allow_ip_domain=false]
- * @param {Boolean} [options.domain_specific_validation=false]
+ * @param {Boolean} [options.allowDisplayName=false]
+ * @param {Boolean} [options.requireDisplayName=false]
+ * @param {Boolean} [options.allowUTF8LocalPart=false]
+ * @param {Boolean} [options.requireTLD=false]
+ * @param {Boolean} [options.allowIPDomain=false]
+ * @param {Boolean} [options.domainSpecificValidation=false]
+ * @param {String} [options.blacklistedChars=false]
  * @param {String} str
  */
 export const $stringIsEmail = _is(
@@ -288,21 +312,48 @@ export const $stringIsEmail = _is(
 )
 
 /**
- * @todo $stringIsFQDN Standardize options to camelCase
+ * Fully Qualified Domain Name (FQDN)
+ * `www.example.com`
+ *
  * @function $stringIsFQDN
+ * @param {Object} [options={}]
+ * @param {Boolean} [options.requireTLD=false]
+ * @param {Boolean} [options.allowUnderscores=false]
+ * @param {Boolean} [options.allowTralingDot=false]
+ * @param {Boolean} [options.allowNumericTLD=false]
+ * @param {String} str
  */
-export const $stringIsFQDN = _is(isFQDN, [
-  'undefined',
-  {
-    require_tld: ['undefined', 'boolean'],
-    allow_underscores: ['undefined', 'boolean'],
-    allow_trailing_dot: ['undefined', 'boolean'],
-    allow_numeric_tld: ['undefined', 'boolean'],
-  },
-])
+export const $stringIsFQDN = _is(
+  (str: string, options: PlainObject) =>
+    isFQDN(
+      str,
+      _transposeObject(
+        {
+          require_tld: 'requireTLD',
+          allow_underscores: 'allowUnderscores',
+          allow_trailing_dot: 'allowTralingDot',
+          allow_numeric_tld: 'allowNumericTLD',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      requireTLD: ['undefined', 'boolean'],
+      allowUnderscores: ['undefined', 'boolean'],
+      allowTralingDot: ['undefined', 'boolean'],
+      allowNumericTLD: ['undefined', 'boolean'],
+    },
+  ]
+)
 
 /**
  * @function $stringIsHash
+ * @param {Object} options
+ * @param {String} options.algorithm `md4`, `md5`, `sha1`, `sha256`, `sha384`, `sha512`, `ripemd128`, `ripemd160`, `tiger128`, `tiger160`, `tiger192`, `crc32`, `crc32b`
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsHash = _is(
   (str: string, { algorithm }: PlainObject) => isHash(str, algorithm),
@@ -310,24 +361,65 @@ export const $stringIsHash = _is(
 )
 
 /**
+ * https://en.wikipedia.org/wiki/Hexadecimal
+ *
  * @function $stringIsHexadecimal
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsHexadecimal = _is(isHexadecimal)
 
 /**
+ * International Bank Account Number (IBAN)
+ *
+ * https://www.iban.com/structure
+ * `BR1500000000000010932840814P2`
+ *
  * @function $stringIsIBAN
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsIBAN = _is(isIBAN)
 
 /**
+ * International Mobile Equipment Identity (IMEI)
+ *
+ * https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity
+ *
  * @function $stringIsIMEI
+ * @param {String} str
+ * @param {Object} [options={}]
+ * @param {Boolean} [options.allowHyphens=false]
+ * @returns {Boolean}
  */
-export const $stringIsIMEI = _is(isIMEI, {
-  allow_hyphens: 'boolean',
-})
+export const $stringIsIMEI = _is(
+  (str: string, options: PlainObject) =>
+    isIMEI(
+      str,
+      _transposeObject(
+        {
+          allow_hyphens: 'allowHyphens',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      allowHyphens: ['undefined', 'boolean'],
+    },
+  ]
+)
 
 /**
+ * - v4: `0.0.0.0`
+ * - v6: `2001:0db8:85a3:0000:0000:8a2e:0370:7334`
+ *
  * @function $stringIsIP
+ * @param {String} str
+ * @param {Object} options
+ * @param {String} options.version `4`, `6`
+ * @returns {Boolean}
  */
 export const $stringIsIP = _is(
   (str: string, { version }: PlainObject): boolean => isIP(str, version),
@@ -340,7 +432,14 @@ export const $stringIsIP = _is(
 )
 
 /**
+ * International Standard Book Number (ISBN)
+ *
+ * `978-3-16-148410-0`
+ * https://en.wikipedia.org/wiki/International_Standard_Book_Number
+ *
  * @function $stringIsISBN
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsISBN = _is(
   (str: string, { version }: PlainObject) => isISBN(str, version),
@@ -353,91 +452,174 @@ export const $stringIsISBN = _is(
 )
 
 /**
+ * International Securities Identification Number (ISIN)
+ *
+ * `US0378331005`
+ * https://en.wikipedia.org/wiki/International_Securities_Identification_Number
+ *
  * @function $stringIsISIN
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsISIN = _is(isISIN)
 
 /**
+ * Two letter country codes
+ * ISO 3166-1 alpha-2
+ * `BR`
+ *
+ * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+ *
  * @function $stringIsISO31661Alpha2
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsISO31661Alpha2 = _is(isISO31661Alpha2)
 
 /**
+ * Three letter country codes
+ * ISO 3166-1 alpha-3
+ * `BRA`
+ *
+ * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+ *
  * @function $stringIsISO31661Alpha3
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsISO31661Alpha3 = _is(isISO31661Alpha3)
 
 /**
+ * International Standard Recording Code (ISRC)
+ * `USRC17607839`
+ *
+ * https://en.wikipedia.org/wiki/International_Standard_Recording_Code
+ *
  * @function $stringIsISRC
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsISRC = _is(isISRC)
 
 /**
- * @todo $stringIsISSN Standardize options to camelCase
+ * International Standard Serial Number (ISSN)
+ * `2049-3630`
+ *
+ * https://en.wikipedia.org/wiki/International_Standard_Serial_Number
+ *
  * @function $stringIsISSN
+ * @param {String} str
+ * @returns {Boolean}
  */
-export const $stringIsISSN = _is(isISSN, [
-  'undefined',
-  {
-    case_sensitive: ['undefined', 'boolean'],
-    require_hyphen: ['undefined', 'boolean'],
-  },
-])
-
-/**
- * @function $stringIsJWT
- */
-export const $stringIsJWT = _is(isJWT)
-
-/**
- * @function $stringIsLowercase
- */
-export const $stringIsLowercase = _is(isLowercase)
-
-/**
- * @function $stringIsMACAddress
- */
-export const $stringIsMACAddress = _is(isMACAddress)
-
-/**
- * @function $stringIsMagnetURI
- */
-export const $stringIsMagnetURI = _is(isMagnetURI)
-
-/**
- * @function $stringIsMimeType
- */
-export const $stringIsMimeType = _is(isMimeType)
-
-/**
- * @function $stringIsMobilePhone
- */
-export const $stringIsMobilePhone = _is(
-  (str: string, { locale, ...options }: PlainObject) =>
-    isMobilePhone(str, locale, options),
+export const $stringIsISSN = _is(
+  (str: string, options: PlainObject) =>
+    isISSN(
+      str,
+      _transposeObject(
+        {
+          case_sensitive: 'caseSensitive',
+          require_hyphen: 'requireHyphen',
+        },
+        options
+      )
+    ),
   [
     'undefined',
     {
-      locale: ['undefined', 'string'],
-      strictMode: ['undefined', 'boolean'],
+      caseSensitive: ['undefined', 'boolean'],
+      requireHyphen: ['undefined', 'boolean'],
     },
   ]
 )
 
 /**
- * @function $stringIsNumeric
+ * JSON Web Token (JWT)
+ *
+ * `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+ * https://tools.ietf.org/html/rfc7519
+ *
+ * @function $stringIsJWT
+ * @param {String} str
+ * @returns {Boolean}
  */
-export const $stringIsNumeric = _is(isNumeric, {
-  no_symbols: 'boolean',
-})
+export const $stringIsJWT = _is(isJWT)
+
+/**
+ * @function $stringIsLowercase
+ * @param {String} str
+ * @returns {Boolean}
+ */
+export const $stringIsLowercase = _is(isLowercase)
+
+/**
+ * Media Access Control address (MAC address)
+ * `06-00-00-00-00-00`
+ *
+ * https://en.wikipedia.org/wiki/MAC_address
+ *
+ * @todo $stringIsMACAddress Check for macaddess without any separators
+ * @function $stringIsMACAddress
+ * @param {String} str
+ * @returns {Boolean}
+ */
+export const $stringIsMACAddress = _is(isMACAddress)
+
+/**
+ * https://en.wikipedia.org/wiki/Magnet_URI_scheme
+ *
+ * @function $stringIsMagnetURI
+ * @param {String} str
+ * @returns {Boolean}
+ */
+export const $stringIsMagnetURI = _is(isMagnetURI)
+
+/**
+ * Media Type / Multipurpose Internet Mail Extensions or MIME type
+ *
+ * `type/subtype;parameter=value`
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+ *
+ * @function $stringIsMimeType
+ * @param {String} str
+ * @returns {Boolean}
+ */
+export const $stringIsMimeType = _is(isMimeType)
+
+/**
+ * @function $stringIsNumeric
+ * @param {String} str
+ * @returns {Boolean}
+ */
+export const $stringIsNumeric = _is(
+  (str: string, options: PlainObject) =>
+    isNumeric(
+      str,
+      _transposeObject(
+        {
+          no_symbols: 'noSymbols',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      noSymbols: ['boolean', 'undefined'],
+    },
+  ]
+)
 
 /**
  * @function $stringIsUppercase
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsUppercase = _is(isUppercase)
 
 /**
  * @function $stringIsStrongPassword
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsStrongPassword = _is(isStrongPassword, [
   'undefined',
@@ -451,24 +633,57 @@ export const $stringIsStrongPassword = _is(isStrongPassword, [
 ])
 
 /**
- * @todo $stringIsURL Standardize options to camelCase
+ * Uniform Resource Locator (URL)
+ * `http://www.example.com/index.html`
+ *
+ * https://en.wikipedia.org/wiki/URL
+ *
  * @function $stringIsURL
+ * @param {String} str
+ * @returns {Boolean}
  */
-export const $stringIsURL = _is(isURL, [
-  'undefined',
-  {
-    require_protocol: ['undefined', 'boolean'],
-    require_valid_protocol: ['undefined', 'boolean'],
-    protocols: ['undefined', 'array'],
-    require_host: ['undefined', 'boolean'],
-    require_port: ['undefined', 'boolean'],
-    allow_protocol_relative_urls: ['undefined', 'boolean'],
-    validate_length: ['undefined', 'boolean'],
-  },
-])
+export const $stringIsURL = _is(
+  (str: string, options: PlainObject) =>
+    isURL(
+      str,
+      _transposeObject(
+        {
+          require_protocol: 'requireProtocol',
+          require_valid_protocol: 'requireValidProtocol',
+          protocols: 'protocols',
+          require_host: 'requireHost',
+          require_port: 'requirePort',
+          allow_protocol_relative_urls: 'allowProtocolRelativeUrls',
+          validate_length: 'validateLength',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      requireProtocol: ['undefined', 'boolean'],
+      requireValidProtocol: ['undefined', 'boolean'],
+      protocols: ['undefined', 'array'],
+      requireHost: ['undefined', 'boolean'],
+      requirePort: ['undefined', 'boolean'],
+      allowProtocolRelativeUrls: ['undefined', 'boolean'],
+      validateLength: ['undefined', 'boolean'],
+    },
+  ]
+)
 
 /**
+ * Universally Unique Identifier (UUID)
+ * Globally Unique Identifier (GUID)
+ *
+ * `123e4567-e89b-12d3-a456-426614174000`
+ *
+ * https://en.wikipedia.org/wiki/Universally_unique_identifier
+ *
  * @function $stringIsUUID
+ * @param {String} str
+ * @returns {Boolean}
  */
 export const $stringIsUUID = _is(
   (str: string, { version }: PlainObject): boolean => isUUID(str, version),
@@ -508,7 +723,6 @@ export const STRING_IS_EXPRESSIONS = {
   $stringIsMACAddress,
   $stringIsMagnetURI,
   $stringIsMimeType,
-  $stringIsMobilePhone,
   $stringIsNumeric,
   $stringIsUppercase,
   $stringIsStrongPassword,
