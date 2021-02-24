@@ -5,7 +5,7 @@ npm install @orioro/expression-string-validate
 yarn add @orioro/expression-string-validate
 ```
 
-A set of expressions based on [validator.js](https://github.com/validatorjs/validator.js/) be used with [`@orioro/expression`](https://github.com/orioro/node-expression) module.
+A set of expressions based on [validator.js](https://github.com/validatorjs/validator.js/) to be used with [`@orioro/expression`](https://github.com/orioro/node-expression) module.
 
 # API Docs
 
