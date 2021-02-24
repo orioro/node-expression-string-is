@@ -27,7 +27,6 @@ import isLowercase from 'validator/lib/isLowercase'
 import isMACAddress from 'validator/lib/isMACAddress'
 import isMagnetURI from 'validator/lib/isMagnetURI'
 import isMimeType from 'validator/lib/isMimeType'
-import isMobilePhone from 'validator/lib/isMobilePhone'
 import isNumeric from 'validator/lib/isNumeric'
 import isUppercase from 'validator/lib/isUppercase'
 import isStrongPassword from 'validator/lib/isStrongPassword'
@@ -97,11 +96,7 @@ import isUUID from 'validator/lib/isUUID'
  * ✓ isMagnetURI(str)
  * ✗ isMD5(str): use isHash
  * ✓ isMimeType(str)
- * ✓ isMobilePhone(str [, locale [, options]]): although a hard thing to standardize,
- *                                              as mobile number pattern vary across
- *                                              countries, code looks promising and
- *                                              mobile phone is an identifier used as
- *                                              frequent as e-mail
+ * ✗ isMobilePhone(str [, locale [, options]]): Hard to standardize, prefer specific locale code
  * ✗ isMongoId(str)
  * ✗ isMultibyte(str)
  * ✓ isNumeric(str [, options])
@@ -234,6 +229,15 @@ export const $stringIsBase64 = _is(isBase64, [
 export const $stringIsBIC = _is(isBIC)
 
 /**
+ * Supported:
+ * - MasterCard
+ * - Visa (16 digits)
+ * - Diners Club
+ * - Discover
+ * - JCB
+ *
+ * @todo $stringIsCreditCard Check support for: enRoute, Voyager, HiperCard and
+ *                           Aura (https://www.4devs.com.br/gerador_de_numero_cartao_credito)
  * @function $stringIsCreditCard
  * @param {String} str
  */
@@ -322,9 +326,24 @@ export const $stringIsIBAN = _is(isIBAN)
 /**
  * @function $stringIsIMEI
  */
-export const $stringIsIMEI = _is(isIMEI, {
-  allow_hyphens: 'boolean',
-})
+export const $stringIsIMEI = _is(
+  (str: string, options: PlainObject) =>
+    isIMEI(
+      str,
+      _transposeObject(
+        {
+          allow_hyphens: 'allowHyphens',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      allowHyphens: ['undefined', 'boolean'],
+    },
+  ]
+)
 
 /**
  * @function $stringIsIP
@@ -395,6 +414,7 @@ export const $stringIsJWT = _is(isJWT)
 export const $stringIsLowercase = _is(isLowercase)
 
 /**
+ * @todo $stringIsMACAddress Check for macaddess without any separators
  * @function $stringIsMACAddress
  */
 export const $stringIsMACAddress = _is(isMACAddress)
@@ -410,26 +430,26 @@ export const $stringIsMagnetURI = _is(isMagnetURI)
 export const $stringIsMimeType = _is(isMimeType)
 
 /**
- * @function $stringIsMobilePhone
+ * @function $stringIsNumeric
  */
-export const $stringIsMobilePhone = _is(
-  (str: string, { locale, ...options }: PlainObject) =>
-    isMobilePhone(str, locale, options),
+export const $stringIsNumeric = _is(
+  (str: string, options: PlainObject) =>
+    isNumeric(
+      str,
+      _transposeObject(
+        {
+          noSymbols: 'no_symbols',
+        },
+        options
+      )
+    ),
   [
     'undefined',
     {
-      locale: ['undefined', 'string'],
-      strictMode: ['undefined', 'boolean'],
+      noSymbols: ['boolean', 'undefined'],
     },
   ]
 )
-
-/**
- * @function $stringIsNumeric
- */
-export const $stringIsNumeric = _is(isNumeric, {
-  no_symbols: 'boolean',
-})
 
 /**
  * @function $stringIsUppercase
@@ -508,7 +528,6 @@ export const STRING_IS_EXPRESSIONS = {
   $stringIsMACAddress,
   $stringIsMagnetURI,
   $stringIsMimeType,
-  $stringIsMobilePhone,
   $stringIsNumeric,
   $stringIsUppercase,
   $stringIsStrongPassword,
