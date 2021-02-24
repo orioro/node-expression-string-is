@@ -44,6 +44,8 @@ const _argLabel = (arg) => {
       return `'${arg}'`
     case 'object':
       return _objectLabel(arg)
+    default:
+      return arg + ''
   }
 }
 
@@ -366,6 +368,8 @@ describe('$stringIsURL', () => {
   _expTests('$stringIsURL', [
     ['Test str', false],
     ['www.example.com', true],
+    ['www.example.com', { requireProtocol: true }, false],
+    ['https://www.example.com', { requireProtocol: true }, true],
     ['https://www.example.com', true],
   ])
 })

@@ -252,12 +252,13 @@ export const $stringIsDataURI = _is(isDataURI)
 /**
  * @function $stringIsEmail
  * @param {Object} [options={}]
- * @param {Boolean} [options.allow_display_name=false]
- * @param {Boolean} [options.require_display_name=false]
- * @param {Boolean} [options.allow_utf8_local_part=false]
- * @param {Boolean} [options.require_tld=false]
- * @param {Boolean} [options.allow_ip_domain=false]
- * @param {Boolean} [options.domain_specific_validation=false]
+ * @param {Boolean} [options.allowDisplayName=false]
+ * @param {Boolean} [options.requireDisplayName=false]
+ * @param {Boolean} [options.allowUTF8LocalPart=false]
+ * @param {Boolean} [options.requireTLD=false]
+ * @param {Boolean} [options.allowIPDomain=false]
+ * @param {Boolean} [options.domainSpecificValidation=false]
+ * @param {String} [options.blacklistedChars=false]
  * @param {String} str
  */
 export const $stringIsEmail = _is(
@@ -295,15 +296,30 @@ export const $stringIsEmail = _is(
  * @todo $stringIsFQDN Standardize options to camelCase
  * @function $stringIsFQDN
  */
-export const $stringIsFQDN = _is(isFQDN, [
-  'undefined',
-  {
-    require_tld: ['undefined', 'boolean'],
-    allow_underscores: ['undefined', 'boolean'],
-    allow_trailing_dot: ['undefined', 'boolean'],
-    allow_numeric_tld: ['undefined', 'boolean'],
-  },
-])
+export const $stringIsFQDN = _is(
+  (str: string, options: PlainObject) =>
+    isFQDN(
+      str,
+      _transposeObject(
+        {
+          require_tld: 'requireTLD',
+          allow_underscores: 'allowUnderscores',
+          allow_trailing_dot: 'allowTralingDot',
+          allow_numeric_tld: 'allowNumericTLD',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      requireTLD: ['undefined', 'boolean'],
+      allowUnderscores: ['undefined', 'boolean'],
+      allowTralingDot: ['undefined', 'boolean'],
+      allowNumericTLD: ['undefined', 'boolean'],
+    },
+  ]
+)
 
 /**
  * @function $stringIsHash
@@ -395,13 +411,26 @@ export const $stringIsISRC = _is(isISRC)
  * @todo $stringIsISSN Standardize options to camelCase
  * @function $stringIsISSN
  */
-export const $stringIsISSN = _is(isISSN, [
-  'undefined',
-  {
-    case_sensitive: ['undefined', 'boolean'],
-    require_hyphen: ['undefined', 'boolean'],
-  },
-])
+export const $stringIsISSN = _is(
+  (str: string, options: PlainObject) =>
+    isISSN(
+      str,
+      _transposeObject(
+        {
+          case_sensitive: 'caseSensitive',
+          require_hyphen: 'requireHyphen',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      caseSensitive: ['undefined', 'boolean'],
+      requireHyphen: ['undefined', 'boolean'],
+    },
+  ]
+)
 
 /**
  * @function $stringIsJWT
@@ -438,7 +467,7 @@ export const $stringIsNumeric = _is(
       str,
       _transposeObject(
         {
-          noSymbols: 'no_symbols',
+          no_symbols: 'noSymbols',
         },
         options
       )
@@ -474,18 +503,36 @@ export const $stringIsStrongPassword = _is(isStrongPassword, [
  * @todo $stringIsURL Standardize options to camelCase
  * @function $stringIsURL
  */
-export const $stringIsURL = _is(isURL, [
-  'undefined',
-  {
-    require_protocol: ['undefined', 'boolean'],
-    require_valid_protocol: ['undefined', 'boolean'],
-    protocols: ['undefined', 'array'],
-    require_host: ['undefined', 'boolean'],
-    require_port: ['undefined', 'boolean'],
-    allow_protocol_relative_urls: ['undefined', 'boolean'],
-    validate_length: ['undefined', 'boolean'],
-  },
-])
+export const $stringIsURL = _is(
+  (str: string, options: PlainObject) =>
+    isURL(
+      str,
+      _transposeObject(
+        {
+          require_protocol: 'requireProtocol',
+          require_valid_protocol: 'requireValidProtocol',
+          protocols: 'protocols',
+          require_host: 'requireHost',
+          require_port: 'requirePort',
+          allow_protocol_relative_urls: 'allowProtocolRelativeUrls',
+          validate_length: 'validateLength',
+        },
+        options
+      )
+    ),
+  [
+    'undefined',
+    {
+      requireProtocol: ['undefined', 'boolean'],
+      requireValidProtocol: ['undefined', 'boolean'],
+      protocols: ['undefined', 'array'],
+      requireHost: ['undefined', 'boolean'],
+      requirePort: ['undefined', 'boolean'],
+      allowProtocolRelativeUrls: ['undefined', 'boolean'],
+      validateLength: ['undefined', 'boolean'],
+    },
+  ]
+)
 
 /**
  * @function $stringIsUUID
