@@ -4,6 +4,12 @@
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
+  "homepage": "https://github.com/npm-org/node-expression-string-is",
+  "bugs": "https://github.com/npm-org/node-expression-string-is/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npm-org/node-expression-string-is.git"
+  },
   "scripts": {
     "test": "jest --collectCoverage",
     "dev": "jest --watch",
@@ -22,6 +28,9 @@
   },
   "author": "",
   "license": "ISC",
+  "files": [
+    "dist/**/*"
+  ],
   "publishConfig": {
     "access": "public"
   },
