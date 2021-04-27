@@ -1,5 +1,3 @@
-import { interpreter } from '@orioro/expression'
-
 import isAlpha from 'validator/lib/isAlpha'
 import isAlphanumeric from 'validator/lib/isAlphanumeric'
 import isAscii from 'validator/lib/isAscii'
@@ -32,6 +30,8 @@ import isUppercase from 'validator/lib/isUppercase'
 import isStrongPassword from 'validator/lib/isStrongPassword'
 import isURL from 'validator/lib/isURL'
 import isUUID from 'validator/lib/isUUID'
+
+const __interpreter = (...args) => args
 
 /**
  * https://github.com/validatorjs/validator.js
@@ -146,12 +146,12 @@ const _transposeObject = (map, obj) =>
 
 const _is = (method, optionsTypeMap?) => {
   return optionsTypeMap
-    ? interpreter(
+    ? __interpreter(
         (options: PlainObject = {}, str: string): boolean =>
           method(str, options),
         [optionsTypeMap, 'string']
       )
-    : interpreter((str: string): boolean => method(str), ['string'])
+    : __interpreter((str: string): boolean => method(str), ['string'])
 }
 
 /**

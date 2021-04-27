@@ -38,6 +38,7 @@
     "@babel/core": "^7.12.16",
     "@babel/preset-env": "^7.12.16",
     "@babel/preset-typescript": "^7.12.16",
+    "@orioro/jest-util-expression": "^1.0.3",
     "@orioro/readme": "^1.0.1",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^17.1.0",
@@ -72,7 +73,7 @@
     ]
   },
   "dependencies": {
-    "@orioro/expression": "^4.0.1",
+    "@orioro/expression": "^6.4.1",
     "validator": "^13.5.2"
   }
 }
